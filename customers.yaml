@@ -1,0 +1,15 @@
+# Demo customers. The first block is what SizeRight sizes from.
+# "actual" says how real usage behaves compared with what the customer declared.
+#   start: real ingest as a share of declared ingest (1.0 = exactly as declared)
+#   growth_per_day: how fast real ingest grows (0.10 = +10% a day)
+customers:
+  - {id: acme,       region: ap-southeast-2, ingest_gb_per_day: 500,  retention_days: 90,  search_profile: moderate, concurrent_users: 40,  premium_apps: [enterprise_security], smartstore: true,  high_availability: true,  actual: {start: 0.85, growth_per_day: 0.00}}
+  - {id: globex,     region: us-east-1,      ingest_gb_per_day: 1200, retention_days: 180, search_profile: heavy,    concurrent_users: 120, premium_apps: [],                    smartstore: true,  high_availability: true,  actual: {start: 1.05, growth_per_day: 0.30}}
+  - {id: initech,    region: eu-west-1,      ingest_gb_per_day: 300,  retention_days: 30,  search_profile: light,    concurrent_users: 15,  premium_apps: [],                    smartstore: false, high_availability: true,  actual: {start: 0.30, growth_per_day: 0.00}}
+  - {id: umbrella,   region: us-west-2,      ingest_gb_per_day: 2000, retention_days: 365, search_profile: heavy,    concurrent_users: 200, premium_apps: [enterprise_security, itsi], smartstore: true, high_availability: true, actual: {start: 0.95, growth_per_day: 0.05}}
+  - {id: hooli,      region: us-west-2,      ingest_gb_per_day: 800,  retention_days: 90,  search_profile: moderate, concurrent_users: 60,  premium_apps: [itsi],                smartstore: true,  high_availability: true,  actual: {start: 0.70, growth_per_day: 0.00}}
+  - {id: wayne,      region: ap-southeast-2, ingest_gb_per_day: 150,  retention_days: 90,  search_profile: moderate, concurrent_users: 10,  premium_apps: [],                    smartstore: false, high_availability: false, actual: {start: 0.60, growth_per_day: 0.50}}
+  - {id: stark,      region: us-east-1,      ingest_gb_per_day: 3000, retention_days: 90,  search_profile: heavy,    concurrent_users: 250, premium_apps: [enterprise_security], smartstore: true,  high_availability: true,  actual: {start: 0.75, growth_per_day: 0.00}}
+  - {id: tyrell,     region: eu-west-1,      ingest_gb_per_day: 600,  retention_days: 60,  search_profile: light,    concurrent_users: 30,  premium_apps: [],                    smartstore: true,  high_availability: true,  actual: {start: 0.25, growth_per_day: 0.00}}
+  - {id: cyberdyne,  region: ap-southeast-2, ingest_gb_per_day: 400,  retention_days: 90,  search_profile: moderate, concurrent_users: 25,  premium_apps: [enterprise_security], smartstore: true,  high_availability: true,  actual: {start: 0.90, growth_per_day: 0.20}}
+  - {id: soylent,    region: us-east-1,      ingest_gb_per_day: 250,  retention_days: 30,  search_profile: light,    concurrent_users: 20,  premium_apps: [],                    smartstore: false, high_availability: true,  actual: {start: 0.80, growth_per_day: 0.00}}
