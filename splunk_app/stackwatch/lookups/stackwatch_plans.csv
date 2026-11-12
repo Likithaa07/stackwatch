@@ -1,0 +1,11 @@
+customer_id,region,sizing_id,rules_version,indexers,core_search_heads,premium_search_heads,gb_per_indexer,planned_capacity_gb,declared_ingest_gb
+acme,ap-southeast-2,2,v1,5,3,1,100,500,500
+globex,us-east-1,3,v1,8,5,0,150,1200,1200
+initech,eu-west-1,4,v1,3,3,0,300,900,300
+umbrella,us-west-2,5,v1,20,8,1,100,2000,2000
+hooli,us-west-2,6,v1,4,3,0,200,800,800
+wayne,ap-southeast-2,7,v1,1,1,0,200,200,150
+stark,us-east-1,8,v1,30,10,1,100,3000,3000
+tyrell,eu-west-1,9,v1,3,3,0,300,900,600
+cyberdyne,ap-southeast-2,10,v1,4,3,1,100,400,400
+soylent,us-east-1,11,v1,3,3,0,300,900,250
