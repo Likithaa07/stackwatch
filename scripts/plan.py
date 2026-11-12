@@ -71,7 +71,7 @@ def plan_row(customer: dict, sizing_id: int, result: dict) -> dict:
     }
 
 
-def size(session: requests.Session, url: str, body: dict, tries: int = 3) -> dict:
+def size(session: requests.Session, url: str, body: dict, tries: int = 3, sleep=time.sleep) -> dict:
     """POST to SizeRight with retries. The first call may wait ~1 min while Render wakes up."""
     for attempt in range(1, tries + 1):
         try:
@@ -83,8 +83,34 @@ def size(session: requests.Session, url: str, body: dict, tries: int = 3) -> dic
                 raise
             wait = 2**attempt
             log.warning("sizing %s failed (%s), retrying in %ss", body["customer_id"], e, wait)
-            time.sleep(wait)
+            sleep(wait)
     raise RuntimeError("unreachable")
+
+
+def run(
+    session: requests.Session, url: str, customers: list[dict], out: Path, sleep=time.sleep
+) -> list[dict]:
+    """Size every customer, then write the lookup. Any failure writes nothing (no partial lookup)."""
+    rows = []
+    for c in customers:
+        resp = size(session, url, build_request(c), sleep=sleep)
+        row = plan_row(c, resp["id"], resp["result"])
+        log.info(
+            "%-10s indexers=%-3s capacity=%s GB/day (declared %s)",
+            c["id"],
+            row["indexers"],
+            row["planned_capacity_gb"],
+            row["declared_ingest_gb"],
+        )
+        rows.append(row)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out.with_suffix(".tmp")
+    with tmp.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=FIELDS)
+        w.writeheader()
+        w.writerows(rows)
+    tmp.replace(out)  # atomic: readers never see a half-written file
+    return rows
 
 
 def main() -> None:
@@ -98,24 +124,10 @@ def main() -> None:
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {token}"
 
-    rows = []
-    for c in customers:
-        resp = size(session, url, build_request(c))
-        row = plan_row(c, resp["id"], resp["result"])
-        log.info(
-            "%-10s indexers=%-3s capacity=%s GB/day (declared %s)",
-            c["id"],
-            row["indexers"],
-            row["planned_capacity_gb"],
-            row["declared_ingest_gb"],
-        )
-        rows.append(row)
-
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with OUT.open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        w.writeheader()
-        w.writerows(rows)
+    try:
+        rows = run(session, url, customers, OUT)
+    except requests.RequestException as e:
+        sys.exit(f"planning failed, lookup NOT updated: {e}")
     log.info("wrote %d plans to %s", len(rows), OUT.relative_to(ROOT))
 
 
