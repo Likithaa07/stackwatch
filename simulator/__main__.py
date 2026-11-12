@@ -109,7 +109,12 @@ def main() -> None:
         sys.exit(str(e))
     customers = yaml.safe_load(CUSTOMERS.read_text())["customers"]
     capacities = load_capacities(PLANS)
-    client = HECClient(cfg.hec_url, cfg.hec_token, verify_tls=not cfg.insecure)
+    # gitleaks:allow below: false positive, hec_token is a variable name; the value comes from the env
+    client = HECClient(
+        cfg.hec_url,
+        cfg.hec_token,
+        verify_tls=not cfg.insecure,  # gitleaks:allow
+    )
 
     stop = threading.Event()
     for sig in (signal.SIGINT, signal.SIGTERM):
