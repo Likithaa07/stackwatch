@@ -1,0 +1,3 @@
+# Reviewed false positives (each one checked by hand; never add real secrets here)
+# hec_token is a variable name in simulator/__main__.py, not a secret (PR #23)
+7a00391d17a6dea615c009d9d11e32068cb9974b:simulator/__main__.py:generic-api-key:112
