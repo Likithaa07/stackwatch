@@ -27,3 +27,9 @@ Settings > Data inputs > HTTP Event Collector > New Token:
 ## TLS note
 `HEC_INSECURE=true` accepts Splunk's self-signed certificate (local dev only). The simulator logs one
 `TLS verification OFF` warning at startup instead of a warning per batch (fixed in #25).
+
+## 5. Package and install the app (SW-8)
+    python scripts/package.py                     # builds dist/stackwatch.tgz
+    /Applications/Splunk/bin/splunk install app "$PWD/dist/stackwatch.tgz" -update 1
+    /Applications/Splunk/bin/splunk restart
+Check: `| inputlookup stackwatch_plans | stats count` in the StackWatch app returns 10 (verified 2026-11-13).
