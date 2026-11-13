@@ -1,0 +1,10 @@
+# SW-10 evidence (Fri Nov 13 16:20:32 AEDT 2026)
+## Rules-version mismatch flag (acme simulated as an old v0 plan)
+customer_id rules_version  rules_check
+----------- ------------- -------------
+acme        v0            MISMATCH (v0)
+globex      v1            ok
+initech     v1            ok
+## Panel load times (CLI, includes login overhead; target < 5 s)
+status table: 0.65 s
+utilisation chart: 0.58 s

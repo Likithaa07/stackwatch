@@ -1,3 +1,4 @@
 <nav search_view="search">
-  <view name="search" default="true" />
+  <view name="stackwatch_overview" default="true" />
+  <view name="search" />
 </nav>
