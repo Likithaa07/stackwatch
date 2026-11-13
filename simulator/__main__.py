@@ -20,6 +20,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+import urllib3
 import yaml
 
 from simulator.hec import HECClient
@@ -101,6 +102,13 @@ def run(cfg: Config, customers, capacities, client, stop: threading.Event, clock
     return batches
 
 
+def warn_if_insecure(insecure: bool) -> None:
+    """One clear startup warning instead of a urllib3 warning on every batch (SW-25)."""
+    if insecure:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        logging.getLogger("simulator").warning("TLS verification OFF (HEC_INSECURE=true): local dev only")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     try:
@@ -109,6 +117,7 @@ def main() -> None:
         sys.exit(str(e))
     customers = yaml.safe_load(CUSTOMERS.read_text())["customers"]
     capacities = load_capacities(PLANS)
+    warn_if_insecure(cfg.insecure)
     # gitleaks:allow below: false positive, hec_token is a variable name; the value comes from the env
     client = HECClient(
         cfg.hec_url,
