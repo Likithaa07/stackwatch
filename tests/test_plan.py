@@ -38,3 +38,11 @@ def test_plan_row_matches_sizeright_golden_case():
     assert row["planned_capacity_gb"] == 500
     assert row["sizing_id"] == 42
     assert row["declared_ingest_gb"] == 500
+
+
+def test_plan_row_is_stamped_with_planned_at_for_staleness_alerts():
+    import time
+
+    result = {"rules_version": "v1", "indexers": 3, "core_search_heads": 1, "premium_search_heads": 0}
+    assert plan_row(ACME, 1, result, planned_at=1_700_000_000)["planned_at"] == 1_700_000_000
+    assert abs(plan_row(ACME, 1, result)["planned_at"] - time.time()) < 5

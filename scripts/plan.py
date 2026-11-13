@@ -32,6 +32,7 @@ FIELDS = [
     "gb_per_indexer",
     "planned_capacity_gb",
     "declared_ingest_gb",
+    "planned_at",
 ]
 SIZERIGHT_FIELDS = [
     "region",
@@ -53,7 +54,7 @@ def build_request(customer: dict) -> dict:
     return body
 
 
-def plan_row(customer: dict, sizing_id: int, result: dict) -> dict:
+def plan_row(customer: dict, sizing_id: int, result: dict, planned_at: int | None = None) -> dict:
     """One lookup row: what SizeRight planned and how much ingest it can take."""
     return {
         "customer_id": customer["id"],
@@ -68,6 +69,7 @@ def plan_row(customer: dict, sizing_id: int, result: dict) -> dict:
             result["indexers"], customer["search_profile"], customer["premium_apps"]
         ),
         "declared_ingest_gb": customer["ingest_gb_per_day"],
+        "planned_at": planned_at if planned_at is not None else int(time.time()),
     }
 
 
