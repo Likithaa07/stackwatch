@@ -24,6 +24,6 @@ Settings > Data inputs > HTTP Event Collector > New Token:
 - Splunk: 1,420 events, all 10 customers, 142 each: [evidence/sw-7-hec-counts.csv](evidence/sw-7-hec-counts.csv)
 - Sent = received, so zero data loss.
 
-## Known issue
-`HEC_INSECURE=true` accepts Splunk's self-signed certificate locally, so urllib3 prints an
-InsecureRequestWarning on every batch. Follow-up ticket: log it once.
+## TLS note
+`HEC_INSECURE=true` accepts Splunk's self-signed certificate (local dev only). The simulator logs one
+`TLS verification OFF` warning at startup instead of a warning per batch (fixed in #25).

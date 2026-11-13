@@ -83,3 +83,12 @@ def test_main_exits_with_clear_message_when_misconfigured(monkeypatch):
     monkeypatch.delenv("HEC_TOKEN", raising=False)
     with pytest.raises(SystemExit, match="missing settings"):
         runner.main()
+
+
+@pytest.mark.parametrize("insecure, expected_calls", [(True, 1), (False, 0)])
+def test_warn_if_insecure_warns_once_only_when_tls_off(monkeypatch, caplog, insecure, expected_calls):
+    calls = []
+    monkeypatch.setattr(runner.urllib3, "disable_warnings", calls.append)
+    runner.warn_if_insecure(insecure)
+    assert len(calls) == expected_calls
+    assert ("TLS verification OFF" in caplog.text) is insecure
