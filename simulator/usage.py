@@ -11,10 +11,14 @@ def daily_curve(hour: float) -> float:
     return 1 + 0.3 * math.sin(2 * math.pi * (hour - 6) / 24)
 
 
+MAX_GROWTH = 1.5  # SW-28: linear growth, capped; real customers do not compound 30%/day
+
+
 def ingest_rate_gb(customer: dict, sim_day: float, hour: float, rng: random.Random) -> float:
     """Current ingest, expressed as a GB/day rate so it compares directly with capacity."""
     actual = customer["actual"]
-    base = customer["ingest_gb_per_day"] * actual["start"] * (1 + actual["growth_per_day"]) ** sim_day
+    growth = min(1 + actual["growth_per_day"] * sim_day, MAX_GROWTH)
+    base = customer["ingest_gb_per_day"] * actual["start"] * growth
     noise = rng.gauss(1.0, 0.05)
     return max(0.0, base * daily_curve(hour) * noise)
 

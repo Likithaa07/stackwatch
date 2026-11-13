@@ -27,14 +27,6 @@ def test_steady_customer_stays_near_declared_ingest():
     assert 950 < avg < 1050
 
 
-def test_growth_compounds_daily():
-    no_noise = random.Random(0)
-    no_noise.gauss = lambda mu, sigma: mu  # remove randomness for an exact check
-    day0 = ingest_rate_gb(GROWER, sim_day=0, hour=6, rng=no_noise)
-    day2 = ingest_rate_gb(GROWER, sim_day=2, hour=6, rng=no_noise)
-    assert day2 == pytest.approx(day0 * 4)  # +100% a day for 2 days
-
-
 def test_sample_fields_and_bounds():
     rng = random.Random(7)
     for capacity in (100, 1000, 100_000):
@@ -54,3 +46,15 @@ def test_sample_fields_and_bounds():
 def test_zero_capacity_does_not_crash():
     s = sample(STEADY, 0, sim_day=0, hour=12, rng=random.Random(1))
     assert s["cpu_pct"] <= 100
+
+
+def test_growth_is_linear_and_capped_so_usage_never_runs_away():
+    from simulator.usage import MAX_GROWTH, ingest_rate_gb
+
+    c = {"ingest_gb_per_day": 100, "actual": {"start": 1.0, "growth_per_day": 0.10}}
+
+    def at(day):
+        return ingest_rate_gb(c, day, 12, random.Random(7))
+
+    assert at(1) / at(0) == pytest.approx(1.10)
+    assert at(365) / at(0) == pytest.approx(MAX_GROWTH)
