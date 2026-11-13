@@ -92,3 +92,18 @@ def test_warn_if_insecure_warns_once_only_when_tls_off(monkeypatch, caplog, inse
     runner.warn_if_insecure(insecure)
     assert len(calls) == expected_calls
     assert ("TLS verification OFF" in caplog.text) is insecure
+
+
+def test_failed_batches_are_logged_as_failures_not_success(caplog):
+    caplog.set_level("INFO")
+
+    class RejectingClient(RecordingClient):
+        def send(self, events):
+            super().send(events)
+            return False
+
+    stop = threading.Event()
+    cfg = runner.Config("u", "t", False, interval=0.001, speed=240)
+    runner.run(cfg, CUSTOMERS, {"a": 100.0, "b": 200.0}, RejectingClient(stop, stop_after=2), stop)
+    assert "batch 1 FAILED" in caplog.text and "batch 1 sent" not in caplog.text
+    assert "(0 sent, 2 failed)" in caplog.text

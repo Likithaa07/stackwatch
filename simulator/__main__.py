@@ -90,15 +90,18 @@ def run(cfg: Config, customers, capacities, client, stop: threading.Event, clock
     """Send a batch every interval until stop is set. Returns the number of batches sent."""
     rng = random.Random()
     start = clock()
-    batches = 0
+    batches = failed = 0
     while not stop.is_set():
         day, hour = sim_clock(clock() - start, cfg.speed)
         events = tick(customers, capacities, day, hour, rng)
-        client.send(events)
         batches += 1
-        log.info("batch %d: %d events, sim day %.2f %02d:00", batches, len(events), day, hour)
+        if client.send(events):
+            log.info("batch %d sent: %d events, sim day %.2f %02d:00", batches, len(events), day, hour)
+        else:
+            failed += 1
+            log.warning("batch %d FAILED: %d events dropped (see hec error above)", batches, len(events))
         stop.wait(cfg.interval)
-    log.info("stopped cleanly after %d batches", batches)
+    log.info("stopped cleanly after %d batches (%d sent, %d failed)", batches, batches - failed, failed)
     return batches
 
 
