@@ -1,0 +1,41 @@
+D3 broken output: injected 17:44:39, detected 17:44:45 (6 s), exit 1, "planning failed, lookup NOT updated", lookup md5 unchanged. PASS.
+Finding 1: `python scripts/plan.py` fails with ModuleNotFoundError; must be `python -m scripts.plan` (runbook says the wrong command).
+Finding 2: malformed JSON is retried 3x (6 s wasted); parse errors are not transient.
+D2+D4 injected 17:56:17
+== D2: customers on dashboard with Region=All (healthy = 10)
+count
+-----
+    9
+== D4: dashboard rules check
+customer_id  rules_check
+----------- -------------
+acme        MISMATCH (v2)
+== Alerts that look at region or rules_version:
+0
+checked 17:56:19
+D1 injected 17:56:53
+customer_id   status   util_pct low_15
+----------- ---------- -------- ------
+hooli       UNDERSIZED    216.3  123.7
+dashboard checked 17:56:54
+D1 alert check 18:00:58
+  ran    result_count                                 sid
+-------- ------------ --------------------------------------------------------------------
+18:00:00            1 scheduler__nobody__stackwatch__RMD5447386438863a79c_at_1794553200_55
+customer_id   status   util_pct
+----------- ---------- --------
+hooli       UNDERSIZED    144.8
+FIX started 18:02:23
+== D2 fixed? customers with Region=All (want 10)
+count
+-----
+   10
+== D4 fixed? mismatches (want none)
+count
+-----
+    0
+== D1 fixed? hooli status (want OK)
+customer_id status util_pct
+----------- ------ --------
+hooli       OK         69.7
+FIX verified 18:02:28
