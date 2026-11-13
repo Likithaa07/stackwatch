@@ -1,0 +1,39 @@
+<form version="1.1" theme="light">
+  <label>StackWatch: plan vs actual</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time"><label>Time</label>
+      <default><earliest>-60m</earliest><latest>now</latest></default></input>
+    <input type="dropdown" token="region"><label>Region</label>
+      <choice value="*">All</choice><default>*</default>
+      <search><query>| inputlookup stackwatch_plans | stats count by region</query></search>
+      <fieldForLabel>region</fieldForLabel><fieldForValue>region</fieldForValue></input>
+    <input type="dropdown" token="customer"><label>Customer</label>
+      <choice value="*">All</choice><default>*</default>
+      <search><query>| inputlookup stackwatch_plans | search region="$region$" | stats count by customer_id</query></search>
+      <fieldForLabel>customer_id</fieldForLabel><fieldForValue>customer_id</fieldForValue></input>
+  </fieldset>
+  <row><panel><title>Status now (click a row to drill down)</title>
+    <table>
+      <search><query>| `stackwatch_status` | lookup stackwatch_plans customer_id OUTPUT region rules_version
+| search region="$region$"
+| eval rules_check=if(rules_version==`stackwatch_current_rules`, "ok", "MISMATCH (".rules_version.")")
+| table customer_id region status util_pct rules_check mins_since | sort status customer_id</query></search>
+      <option name="drilldown">row</option>
+      <format type="color" field="status"><colorPalette type="map">{"UNDERSIZED":#DC4E41,"OVERSIZED":#F8BE34,"OK":#53A051,"NO DATA":#708794}</colorPalette></format>
+      <format type="color" field="rules_check"><colorPalette type="map">{"ok":#53A051}</colorPalette></format>
+      <drilldown><set token="form.customer">$row.customer_id$</set></drilldown>
+    </table></panel></row>
+  <row><panel><title>Utilisation % over time (dashed: 90% undersized, 40% oversized)</title>
+    <chart>
+      <search><query>index=stackwatch sourcetype=stackwatch:usage region="$region$" customer_id="$customer$"
+| lookup stackwatch_plans customer_id OUTPUT planned_capacity_gb
+| eval util_pct=round(100*ingest_gb_per_day/planned_capacity_gb, 1)
+| timechart span=1m avg(util_pct) by customer_id
+| `stackwatch_thresholds` | fields - under_min over_min nodata_min</query>
+        <earliest>$time.earliest$</earliest><latest>$time.latest$</latest></search>
+      <option name="charting.chart">line</option>
+      <option name="charting.fieldDashStyles">{"under_pct":"dash","over_pct":"dash"}</option>
+      <option name="charting.fieldColors">{"under_pct":0xDC4E41,"over_pct":0xF8BE34}</option>
+      <option name="charting.axisTitleY.text">utilisation %</option>
+    </chart></panel></row>
+</form>
