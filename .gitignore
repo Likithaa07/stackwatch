@@ -7,3 +7,4 @@ __pycache__/
 *.tgz
 .coverage
 *.tmp
+.DS_Store
