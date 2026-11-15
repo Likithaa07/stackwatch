@@ -1,0 +1,14 @@
+D2 re-injected 19:54:45
+== dashboard customers with Region=All (want 10)
+count
+-----
+   10
+== plan data quality alert (want stark)
+customer_id region severity
+----------- ------ --------
+stark              medium
+== after restore (want 0)
+count
+-----
+    0
+verified 19:54:49

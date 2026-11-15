@@ -16,3 +16,11 @@ def test_dashboard_has_required_inputs_drilldown_and_shared_macros():
 def test_app_opens_on_the_dashboard():
     nav = ET.parse(UI / "nav/default.xml").getroot()
     assert nav.find("view[@default='true']").get("name") == "stackwatch_overview"
+
+
+def test_region_filters_keep_plans_with_missing_region():
+    root = ET.parse(UI / "views/stackwatch_overview.xml").getroot()
+    region_queries = [
+        q.text for q in root.iter("query") if "inputlookup" in q.text or "OUTPUT region" in q.text
+    ]
+    assert region_queries and all("fillnull value=unknown region" in q for q in region_queries)
