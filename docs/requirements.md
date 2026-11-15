@@ -74,7 +74,7 @@ Replace the manual weekly check of how well SizeRight's plans match reality.
 - Packaged Splunk app (`stackwatch.tgz`)
 - Source repository with README, design doc, runbook and incident reviews
 - One-page customer explainer: how a stack's size was chosen and what the dashboard shows
-- Recorded mock customer session (a stack running slow, explained using the dashboard)
+- ~~Recorded mock customer session~~ replaced by a scripted walkthrough (`docs/mock-session.md`), see change request below
 - Weekly status report (done, next, risks, evidence)
 
 ## Out of scope
@@ -85,3 +85,8 @@ Real Splunk Cloud customer data, billing, a UI outside Splunk.
 |---|---|---|---|
 | Client | PSP Provisioning (played by project lead) | 2026-11-11 | Approved after review round 1 |
 | Engineering | Likitha Vankadoth | 2026-11-11 | Approved |
+
+## Change log
+| Date | Change | Approved |
+|---|---|---|
+| 2026-11-16 | Recorded mock session replaced by scripted walkthrough for v1.0.0 (#46) | project lead |
