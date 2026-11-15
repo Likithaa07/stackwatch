@@ -1,6 +1,6 @@
 # Mock customer session (about 3 minutes)
 
-**Scenario:** Globex says "our Splunk searches got slow this week". Recording: _link added after recording_.
+**Scenario:** Globex says "our Splunk searches got slow this week". Recording: descoped for v1.0.0 (#46); this script is the deliverable.
 
 **Setup:** simulator running for 15+ minutes (`./scripts/k8s-up.sh`), dashboard open, Time = Last 60 minutes.
 
