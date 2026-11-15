@@ -107,3 +107,36 @@ def test_main_reports_clear_error_and_keeps_old_lookup(monkeypatch, tmp_path):
     with pytest.raises(SystemExit, match="lookup NOT updated"):
         plan.main()
     assert not (tmp_path / "plans.csv").exists()
+
+
+class _Resp:
+    def __init__(self, status=200, body=None):
+        self.status_code, self.body = status, body
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise requests.HTTPError(f"{self.status_code}", response=self)
+
+    def json(self):
+        if self.body is None:
+            raise requests.JSONDecodeError("Unterminated string", '{"indexers": 3, "core_', 16)
+        return self.body
+
+
+class _Session:
+    def __init__(self, resp):
+        self.resp, self.calls = resp, 0
+
+    def post(self, *a, **k):
+        self.calls += 1
+        return self.resp
+
+
+@pytest.mark.parametrize("resp", [_Resp(200, None), _Resp(400, {})], ids=["broken-json", "http-400"])
+def test_size_fails_fast_on_errors_that_retrying_cannot_fix(resp):
+    from scripts.plan import size
+
+    s, slept = _Session(resp), []
+    with pytest.raises(requests.RequestException):
+        size(s, "http://x", {"customer_id": "acme"}, sleep=slept.append)
+    assert (s.calls, slept) == (1, [])
