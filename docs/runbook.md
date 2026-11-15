@@ -32,3 +32,13 @@ Dashboard: StackWatch app > "StackWatch: plan vs actual".
 3. Confirm with `| inputlookup stackwatch_plans | table customer_id planned_at rules_version`; the next alert run should clear it.
 
 **Escalation:** if SizeRight is down or refresh fails twice, raise a ticket with the SizeRight owner; plans stay stale until it is fixed.
+
+## Plan data quality
+**Severity:** Medium. **Meaning:** a plan in the lookup is missing its region, capacity or rules version, so that customer may be judged wrongly or hidden in region filters.
+
+**First 3 steps**
+1. Run `| inputlookup stackwatch_plans | table customer_id region planned_capacity_gb rules_version` and find the empty field.
+2. Check the customer's entry in `customers.yaml`; fix the missing value at the source.
+3. Re-plan with `python -m scripts.plan`, rebuild and reinstall the app (as in Stale plans).
+
+**Escalation:** if SizeRight itself returned the incomplete plan, raise a bug with the SizeRight owner and attach the response.
