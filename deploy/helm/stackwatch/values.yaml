@@ -1,0 +1,26 @@
+images:
+  simulator: stackwatch-simulator:local
+  sizeright: sizeright:local
+  postgres: postgres:16-alpine
+  redis: redis:7-alpine
+  migrate: migrate/migrate:v4.17.1
+pullPolicy: IfNotPresent
+
+simulator:
+  hecUrl: https://host.docker.internal:8088/services/collector/event  # Splunk on the Mac host
+  hecInsecure: "true"
+  interval: "60"
+  speed: "240"
+
+sizeright:
+  rateLimitPerMin: "120"
+
+resources:
+  small: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 250m, memory: 128Mi}}
+  medium: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 256Mi}}
+
+# Never put real values here. scripts/k8s-up.sh passes them with --set at install time.
+secrets:
+  dbPassword: ""
+  jwtSecret: ""
+  hecToken: ""
