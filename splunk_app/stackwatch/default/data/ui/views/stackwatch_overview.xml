@@ -5,16 +5,16 @@
       <default><earliest>-60m</earliest><latest>now</latest></default></input>
     <input type="dropdown" token="region"><label>Region</label>
       <choice value="*">All</choice><default>*</default>
-      <search><query>| inputlookup stackwatch_plans | stats count by region</query></search>
+      <search><query>| inputlookup stackwatch_plans | fillnull value=unknown region | stats count by region</query></search>
       <fieldForLabel>region</fieldForLabel><fieldForValue>region</fieldForValue></input>
     <input type="dropdown" token="customer"><label>Customer</label>
       <choice value="*">All</choice><default>*</default>
-      <search><query>| inputlookup stackwatch_plans | search region="$region$" | stats count by customer_id</query></search>
+      <search><query>| inputlookup stackwatch_plans | fillnull value=unknown region | search region="$region$" | stats count by customer_id</query></search>
       <fieldForLabel>customer_id</fieldForLabel><fieldForValue>customer_id</fieldForValue></input>
   </fieldset>
   <row><panel><title>Status now (click a row to drill down)</title>
     <table>
-      <search><query>| `stackwatch_status` | lookup stackwatch_plans customer_id OUTPUT region rules_version
+      <search><query>| `stackwatch_status` | lookup stackwatch_plans customer_id OUTPUT region rules_version | fillnull value=unknown region
 | search region="$region$"
 | eval rules_check=if(rules_version==`stackwatch_current_rules`, "ok", "MISMATCH (".rules_version.")")
 | table customer_id region status util_pct rules_check mins_since | sort status customer_id</query></search>

@@ -18,12 +18,18 @@ def test_three_alerts_with_signed_off_severities():
         "StackWatch - UNDERSIZED": "5",
         "StackWatch - NO DATA": "3",
         "StackWatch - stale plans": "3",
+        "StackWatch - plan data quality": "3",
     }
 
 
 def test_alerts_run_every_5_min_and_are_throttled_per_customer_per_hour():
     alerts = conf("savedsearches.conf")
-    for name in ("StackWatch - UNDERSIZED", "StackWatch - NO DATA", "StackWatch - stale plans"):
+    for name in (
+        "StackWatch - UNDERSIZED",
+        "StackWatch - NO DATA",
+        "StackWatch - stale plans",
+        "StackWatch - plan data quality",
+    ):
         a = alerts[name]
         assert (a["cron_schedule"], a["alert.suppress"], a["alert.suppress.period"]) == (
             "*/5 * * * *",

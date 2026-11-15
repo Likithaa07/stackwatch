@@ -10,7 +10,7 @@ def test_every_alert_links_to_a_runbook_section_with_meaning_steps_and_escalatio
             r"runbook\.md#([\w-]+)", Path("splunk_app/stackwatch/default/savedsearches.conf").read_text()
         )
     )
-    assert links == {"undersized", "no-data", "stale-plans"}
+    assert links == {"undersized", "no-data", "stale-plans", "plan-data-quality"}
     sections = re.split(r"^## ", RUNBOOK, flags=re.M)[1:]
     anchors = {s.splitlines()[0].strip().lower().replace(" ", "-"): s for s in sections}
     for link in links:
