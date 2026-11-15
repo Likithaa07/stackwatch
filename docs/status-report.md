@@ -1,6 +1,6 @@
 # StackWatch: final status report (v1.0.0, 2026-11-16)
 
-**Overall: GREEN.** All 22 tickets across 5 sprints are closed. Every requirement has live evidence in `docs/evidence/`.
+**Overall: GREEN.** All 23 tickets are closed: 16 planned, 6 found by reviews and drills (#25, #28, #33, #36-#38), 1 change request (#46). Every requirement has live evidence in `docs/evidence/`.
 
 ## Done
 | Sprint | Delivered |

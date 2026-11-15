@@ -70,7 +70,7 @@ flowchart LR
     python -m scripts.plan                # size every customer with SizeRight (needs SIZERIGHT_TOKEN)
     python scripts/package.py             # build dist/stackwatch.tgz, then install it in Splunk
     set -a; source .env; set +a; python -m simulator
-    python -m scripts.report              # weekly report into docs/reports/
+    SPLUNK_PASSWORD=... python -m scripts.report   # weekly report into docs/reports/ (SPLUNK_MGMT_URL defaults to https://localhost:8089)
 
 Or run SizeRight, Postgres, Redis and the simulator on Kubernetes: `./scripts/k8s-up.sh` ([docs](docs/kubernetes.md)).
 
@@ -87,7 +87,7 @@ Or run SizeRight, Postgres, Redis and the simulator on Kubernetes: `./scripts/k8
 
 ## How it was built
 
-Run like a client project: signed-off [requirements](docs/requirements.md), 22 tickets over 5 sprints on a
+Run like a client project: signed-off [requirements](docs/requirements.md), 23 tickets over 5 sprints (16 planned, 6 found by reviews and drills, 1 change request) on a
 GitHub Project board, one ticket = one branch = one PR, a Definition of Done, and live evidence in every PR.
 Failure [drills](docs/drills.md) found three gaps, each fixed with a test. Start with the
 [customer explainer](docs/customer-explainer.md) and the [final status report](docs/status-report.md).
