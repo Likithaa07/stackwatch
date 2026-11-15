@@ -40,6 +40,7 @@ class Config:
     insecure: bool
     interval: float
     speed: float
+    heartbeat: str = ""  # file touched after every batch; Kubernetes liveness checks it (SW-15)
 
 
 def load_config(env: dict) -> Config:
@@ -57,6 +58,7 @@ def load_config(env: dict) -> Config:
         insecure=env.get("HEC_INSECURE", "false").lower() == "true",
         interval=interval,
         speed=speed,
+        heartbeat=env.get("HEARTBEAT_FILE", ""),
     )
 
 
@@ -100,6 +102,8 @@ def run(cfg: Config, customers, capacities, client, stop: threading.Event, clock
         else:
             failed += 1
             log.warning("batch %d FAILED: %d events dropped (see hec error above)", batches, len(events))
+        if cfg.heartbeat:
+            Path(cfg.heartbeat).touch()
         stop.wait(cfg.interval)
     log.info("stopped cleanly after %d batches (%d sent, %d failed)", batches, batches - failed, failed)
     return batches

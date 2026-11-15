@@ -1,0 +1,58 @@
+{{- $db := printf "%s-postgres:5432/sizer?sslmode=disable" .Release.Name }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sizeright
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: sizeright}
+  template:
+    metadata:
+      labels: {app: sizeright}
+    spec:
+      initContainers:
+        - name: migrate  # same as the compose "migrate" service; retried until Postgres is ready
+          image: {{ .Values.images.migrate }}
+          args: ["-path", "/migrations", "-database", "postgres://sizer:$(DB_PASSWORD)@{{ $db }}", "up"]
+          env:
+            - name: DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ .Release.Name }}-secrets, key: db-password}}
+          volumeMounts:
+            - {name: migrations, mountPath: /migrations}
+          resources: {{- toYaml .Values.resources.small | nindent 12 }}
+      containers:
+        - name: sizeright
+          image: {{ .Values.images.sizeright }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ .Release.Name }}-secrets, key: db-password}}
+            - {name: DATABASE_URL, value: "postgres://sizer:$(DB_PASSWORD)@{{ $db }}&pool_max_conns=10"}
+            - name: JWT_SECRET
+              valueFrom: {secretKeyRef: {name: {{ .Release.Name }}-secrets, key: jwt-secret}}
+            - {name: REDIS_ADDR, value: "{{ .Release.Name }}-redis:6379"}
+            - {name: RATE_LIMIT_PER_MIN, value: {{ .Values.sizeright.rateLimitPerMin | quote }}}
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8080}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources: {{- toYaml .Values.resources.medium | nindent 12 }}
+          securityContext: {runAsNonRoot: true, runAsUser: 65532, allowPrivilegeEscalation: false}
+      volumes:
+        - name: migrations
+          configMap: {name: {{ .Release.Name }}-sizeright-migrations}  # created by scripts/k8s-up.sh
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-sizeright
+spec:
+  selector: {app: sizeright}
+  ports:
+    - port: 8080

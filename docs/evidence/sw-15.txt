@@ -1,0 +1,20 @@
+SW-15 evidence 2026-11-15 21:08:31
+NAME                                    READY   STATUS    RESTARTS   AGE
+stackwatch-postgres-5d6558c4b6-trxgc    1/1     Running   0          102s
+stackwatch-redis-8496b4c76b-4dmtw       1/1     Running   0          102s
+stackwatch-simulator-5d7fbb4b7d-m94s4   1/1     Running   0          102s
+stackwatch-sizeright-5985946d79-zhb9g   1/1     Running   0          102s
+== simulator in cluster -> Splunk HEC on the host
+2026-11-15 10:05:42,741 WARNING simulator TLS verification OFF (HEC_INSECURE=true): local dev only
+2026-11-15 10:05:42,791 INFO simulator batch 1 sent: 10 events, sim day 0.00 08:00
+2026-11-15 10:06:42,801 INFO simulator batch 2 sent: 10 events, sim day 0.17 12:00
+== SizeRight /readyz
+{"status":"ready"}
+
+== probes and limits (every container)
+stackwatch-postgres  liveness=10s  readiness=5s  limits={"cpu":"500m","memory":"256Mi"}
+stackwatch-redis  liveness=10s  readiness=5s  limits={"cpu":"250m","memory":"128Mi"}
+stackwatch-simulator  liveness=30s  readiness=10s  limits={"cpu":"250m","memory":"128Mi"}
+stackwatch-sizeright  liveness=10s  readiness=5s  limits={"cpu":"500m","memory":"256Mi"}
+== Kubernetes Secret keys (values never printed)
+db-password hec-token jwt-secret 

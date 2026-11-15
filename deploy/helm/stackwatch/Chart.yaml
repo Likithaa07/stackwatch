@@ -1,0 +1,6 @@
+apiVersion: v2
+name: stackwatch
+description: SizeRight + Postgres + Redis + StackWatch simulator on Kubernetes (SW-15)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
