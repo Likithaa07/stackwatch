@@ -79,13 +79,15 @@ def size(session: requests.Session, url: str, body: dict, tries: int = 3, sleep=
         try:
             r = session.post(f"{url}/v1/sizings", json=body, timeout=90)
             r.raise_for_status()
-            return r.json()
         except requests.RequestException as e:
-            if attempt == tries:
-                raise
+            status = getattr(e.response, "status_code", None)
+            if attempt == tries or (status is not None and status < 500):
+                raise  # 4xx will not fix itself; only network errors and 5xx are retried (SW-36)
             wait = 2**attempt
             log.warning("sizing %s failed (%s), retrying in %ss", body["customer_id"], e, wait)
             sleep(wait)
+            continue
+        return r.json()  # broken JSON fails fast: retrying will not fix it (SW-36)
     raise RuntimeError("unreachable")
 
 
