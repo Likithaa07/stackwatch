@@ -1,0 +1,14 @@
+D4 re-injected 20:30:00
+INFO: Successfully read lookup file '/Applications/Splunk/etc/apps/stackwatch/lookups/stackwatch_plans.csv'.
+INFO: Results written to file '/Applications/Splunk/etc/apps/stackwatch/lookups/stackwatch_plans.csv' on serverName='Likithas-MacBook-Air.local'.
+== rules mismatch alert (want acme v2)
+INFO: Successfully read lookup file '/Applications/Splunk/etc/apps/stackwatch/lookups/stackwatch_plans.csv'.
+customer_id rules_version severity
+----------- ------------- --------
+acme        v2            medium
+== after restore (want 0)
+INFO: Successfully read lookup file '/Applications/Splunk/etc/apps/stackwatch/lookups/stackwatch_plans.csv'.
+count
+-----
+    0
+verified 20:35:38

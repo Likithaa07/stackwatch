@@ -42,3 +42,13 @@ Dashboard: StackWatch app > "StackWatch: plan vs actual".
 3. Re-plan with `python -m scripts.plan`, rebuild and reinstall the app (as in Stale plans).
 
 **Escalation:** if SizeRight itself returned the incomplete plan, raise a bug with the SizeRight owner and attach the response.
+
+## Rules mismatch
+**Severity:** Medium. **Meaning:** a plan was made with different SizeRight sizing rules than the current version, so its capacity may no longer match how SizeRight sizes today.
+
+**First 3 steps**
+1. Check the SizeRight changelog for what changed between the plan's rules version and the current one.
+2. Re-plan with `python -m scripts.plan` so every plan uses the current rules.
+3. If SizeRight really moved to new rules, update `stackwatch_current_rules` in `macros.conf` in the same PR.
+
+**Escalation:** if nobody announced the rules change, raise it with the SizeRight owner: silent rule changes are a process failure.
