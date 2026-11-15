@@ -22,7 +22,7 @@ flowchart LR
   M --> R[weekly report]
 ```
 
-<!-- SCREENSHOT: paste the dashboard screenshot here in the GitHub editor -->
+<img width="1298" height="680" alt="Screenshot 2026-11-16 at 1 20 05 am" src="https://github.com/user-attachments/assets/e3ab1f0a-097a-458c-8ac7-1a3471246c93" />
 
 ## Results (measured, with evidence in `docs/evidence/`)
 
