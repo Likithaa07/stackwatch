@@ -7,6 +7,21 @@ planned by [SizeRight](https://github.com/Likithaa07/sizeright) with real usage,
 **UNDERSIZED / OK / OVERSIZED / NO DATA**, alerts on-call with a runbook link, and writes a weekly
 plan-accuracy report.
 
+## Why
+
+SizeRight sizes a customer's Splunk stack up front. But customers grow, shrink and change how they search, so
+a plan that was right on day one can be wrong a month later. StackWatch closes that loop: it keeps checking
+every plan against real usage and tells on-call, and the customer, when a stack needs re-sizing.
+
+## Features
+
+- **Plan vs actual** for every customer, using SizeRight's own capacity model
+- **Four statuses** with sustained-time rules, so a single spike never pages anyone
+- **Dashboard** with region and customer filters, drilldown and a rules-version check (loads in < 1 s)
+- **5 alerts** (UNDERSIZED, NO DATA, stale plans, plan data quality, rules mismatch), throttled per customer, each linked to a runbook section
+- **Weekly report** in one command: customers ranked worst first, each with an action
+- **Kubernetes**: SizeRight, Postgres, Redis and the simulator via one Helm chart
+
 ## Architecture
 
 ```mermaid
@@ -35,6 +50,18 @@ flowchart LR
 | Gaps found by drills | 3, all fixed with tests (#36, #37, #38) | n/a |
 | Kubernetes | SizeRight, Postgres, Redis, simulator up in 22 s with one command | one command |
 | Quality gates | 56 tests, 93% coverage; CI runs ruff, pytest, helm lint, gitleaks | 85% coverage |
+
+## Design decisions
+
+| Decision | Why | Trade-off |
+|---|---|---|
+| Alerts need 15 min sustained above 90% | peaks are normal; paging on spikes burns out on-call | slower than instant; measured 12.1 min, inside the 20 min target |
+| Report uses p95, not the alert rule | planning should see busy hours an incident rule ignores | a stack can be OK on the dashboard but flagged in the report (explained in both) |
+| All thresholds in one macro, tested in CI | one place to tune; tests fail if a number drifts or is hardcoded | thresholds need a PR to change, by design |
+| Plans written atomically (temp file, then rename) | a failed SizeRight call must never leave half a lookup | none in practice; drill D3 proved it |
+| Retry only network errors and 5xx | broken JSON or a 4xx will not fix itself | found by a drill, fixed in #36 |
+| Unknown plan age counts as stale | safer to re-plan than to trust a plan of unknown age | demo plans alert until re-planned |
+| Descoped the recorded session via a change request | keep scope changes visible, not silent | written walkthrough instead of video (#46) |
 
 ## Quick start
 
