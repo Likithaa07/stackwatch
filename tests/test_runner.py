@@ -107,3 +107,13 @@ def test_failed_batches_are_logged_as_failures_not_success(caplog):
     runner.run(cfg, CUSTOMERS, {"a": 100.0, "b": 200.0}, RejectingClient(stop, stop_after=2), stop)
     assert "batch 1 FAILED" in caplog.text and "batch 1 sent" not in caplog.text
     assert "(0 sent, 2 failed)" in caplog.text
+
+
+def test_heartbeat_file_is_touched_every_batch_when_configured(tmp_path):
+    hb = tmp_path / "heartbeat"
+    cfg = runner.load_config(
+        {"HEC_URL": "u", "HEC_TOKEN": "t", "SIM_INTERVAL": "0.001", "HEARTBEAT_FILE": str(hb)}
+    )
+    stop = threading.Event()
+    runner.run(cfg, CUSTOMERS, {"a": 100.0, "b": 200.0}, RecordingClient(stop, stop_after=2), stop)
+    assert hb.exists()
